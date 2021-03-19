@@ -25,6 +25,7 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def hello_world(self):
     from .request import get_data
+    LOGGER.info("STARTED TO GET DATA")
     get_data("BTC", "USD", API_KEY)
     LOGGER.info("UPDATED DATABASE")
     return str("DONE FIRST")

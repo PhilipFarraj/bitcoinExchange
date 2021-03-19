@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'btc',
         'USER': 'root',
         'PASSWORD': 'asdasdasd',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
