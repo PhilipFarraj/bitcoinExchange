@@ -1,0 +1,58 @@
+version: '2'
+services:
+  common_server:
+    build:
+      context: ../
+      args:
+        settings: 'bitcoinExchange.settings'
+    volumes:
+      - ../:/usr/src/app/
+
+  server:
+    extends:
+      service: common_server
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+
+    environment:
+      DEBUG: 'true'
+      ALPHA_VANTAGE_API_KEY: '6X2VO4P737DXVQ7G'
+    command: bash -c "
+      python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000
+      "
+    links:
+      - redis
+      - db
+
+  redis:
+    image: redis:2.8.19
+    hostname: redis
+    expose:
+      - "6379"
+
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: asdasdasd
+      POSTGRES_DB: btc
+    expose:
+      - "5432"
+    ports:
+      - "5434:5432"
+
+  celery-beat:
+    extends:
+      service: common_server
+    command: celery -A bitcoinExchange beat -l info
+
+  celery-worker:
+    extends:
+      service: common_server
+    command: celery -A bitcoinExchange worker -l info
